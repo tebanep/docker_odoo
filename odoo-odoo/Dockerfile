@@ -29,16 +29,15 @@ USER root
 RUN locale-gen en_US.UTF-8
 RUN dpkg-reconfigure locales
 
-# make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
-#RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
-#	&& localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-#ENV LANG en_US.utf8
-
 # Copy odoo configuration file
-COPY openerp-server.conf /opt/odoo/openerp-server.conf
-RUN chown odoo: /opt/odoo/openerp-server.conf
-RUN chmod 755 /opt/odoo/openerp-server.conf
+RUN mkdir -p /etc/odoo
+COPY openerp-server.conf /etc/odoo/openerp-server.conf
+RUN chown -R odoo: /etc/odoo
+RUN chmod -R 755 /etc/odoo
+
+#VOLUME ["/etc/odoo", "/opt/odoo/addons", "/var/log/odoo"]
 
 # Set entrypoint
 USER odoo
-ENTRYPOINT ["/opt/odoo/odoo/odoo.py", "-c", "/opt/odoo/openerp-server.conf"]
+ENTRYPOINT ["/opt/odoo/odoo/odoo.py"]
+CMD ["-c", "/opt/odoo/openerp-server.conf"]
