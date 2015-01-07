@@ -1,0 +1,9 @@
+FROM postgres:9.4
+
+#COPY setup.sh /docker-entrypoint-initdb.d/
+
+USER postgres
+
+RUN /etc/init.d/postgresql start &&\
+    psql --command "CREATE USER odoo WITH SUPERUSER PASSWORD 'odoo';" &&\
+    createdb -O odoo odoo

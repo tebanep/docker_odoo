@@ -1,0 +1,18 @@
+#data:
+#  image: tebanep/odoo-data
+db:
+  image: tebanep/odoo-postgresql
+  #volumes_from:
+  #  - data
+odoo:
+  image: tebanep/odoo-odoo
+  #volumes_from:
+  #  - data
+  links:
+    - db
+  ports:
+    - "5069:8069"
+  #command: --db_host db
+
+
+
