@@ -68,3 +68,6 @@ EXPOSE 8072
 
 # Create volumes
 VOLUME ["/etc/odoo", "/opt/odoo/addons", "/var/log/odoo"]
+
+# Set command
+CMD ["odoo/odoo.py", "-c", "/etc/odoo/openerp-server.conf"]
