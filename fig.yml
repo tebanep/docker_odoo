@@ -6,7 +6,6 @@ odoo:
     - db
   ports:
     - "5069:8069"
-  #command: --db_host db
 data:
   image: tebanep/odoo-data
   volumes_from:
