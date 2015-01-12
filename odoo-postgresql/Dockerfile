@@ -23,7 +23,7 @@ USER postgres
 #       allows the RUN command to span multiple lines.
 RUN    service postgresql start && \
 	   psql --command "CREATE USER odoo WITH CREATEDB SUPERUSER PASSWORD 'odoo';" && \
-	   createdb -O odoo odoo && \
+	   createdb -O odoo odoo
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
