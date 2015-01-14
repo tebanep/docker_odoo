@@ -1,31 +1,35 @@
 containers:
-  db:
-    dockerfile: odoo-data/Dockerfile
-    image: tebanep/odoo-postgresql
-    run:
-      detach: True
-  odoo:
-    dockerfile: odoo-odoo/Dockerfile
-    image: tebanep/odoo-odoo
+  data:
+    dockerfile: odoo-postgresql/Dockerfile.old
+    image: tebanep/odoo-data
     run:
       volume:
         - "/home/eecheverry/Workspace/Pycharm/odoo_training_modules:/opt/odoo/addons"
-      cmd: ["/bin/bash"]
+      detach: True
+  db:
+    dockerfile: odoo-data/Dockerfile.old
+    image: tebanep/odoo-postgresql
+    run:
+      publish:
+          - "5032:5432"
+      volumes-from:
+          - data
+      detach: True
+  odoo:
+    dockerfile: odoo-odoo/Dockerfile.old
+    image: tebanep/odoo-odoo
+    run:
       tty: True
       interactive: True
       link:
         - db:db
       publish:
         - "5069:8069"
-      detach: True
-  data:
-    dockerfile: odoo-postgresql/Dockerfile
-    image: tebanep/odoo-data
-    run:
       volumes-from:
-        - db
-        - odoo
+        - data
+      cmd: ["/bin/bash"]
       detach: True
+
 
 
 

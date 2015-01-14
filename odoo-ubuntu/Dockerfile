@@ -2,6 +2,17 @@ FROM ubuntu:14.04
 MAINTAINER Esteban Echeverry <tebanep@gmail.com>
 ENV REFRESHED_AT 2015-01-05
 
+
+# add our users and groups first to make sure their IDs get assigned consistently,
+# regardless of whatever dependencies get added
+
+# Create postgres user
+#RUN groupadd -r postgres && useradd -r -g postgres postgres
+RUN adduser --system --shell /bin/bash --home=/var/lib/postgresql -c "PostgreSQL administrator" --group postgres
+
+# Create odoo user
+RUN adduser --system --shell /bin/bash --home=/opt/odoo -c "Odoo administrator" --group odoo
+
 # Allow the automatic answer of dialogs
 ENV DEBIAN_FRONTEND noninteractive
 
