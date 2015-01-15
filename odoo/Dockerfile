@@ -175,7 +175,7 @@ RUN chmod -R +x /backer
 # Create Backups' volumes
 RUN mkdir -p /backups
 RUN chmod 777 -R /backups
-VOLUME ["/backups"]
+VOLUME ["/backups", "/etc/cron.d"]
 
 COPY supervisord.conf.d/* /etc/supervisor/conf.d/
 

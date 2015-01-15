@@ -1,31 +1,32 @@
 containers:
 
-  ${CRANE_NAMESPACE}_data:
+  ${CRANE}_data:
     dockerfile: odoo/Dockerfile
     image: tebanep/odoo
     run:
-    detach: Tr
-  ${CRANE_NAMESPACE}_db:
+    detach: True
+
+  ${CRANE}_db:
     dockerfile: odoo/Dockerfile
     image: tebanep/odoo
     run:
       publish:
         - "5032:5432"
       volumes-from:
-        - ${CRANE_NAMESPACE}_data
+        - ${CRANE}_data
       cmd: ["/init.py", "--postgresql"]
       detach: True
 
-  ${CRANE_NAMESPACE}_odoo:
+  ${CRANE}_odoo:
     dockerfile: odoo/Dockerfile
     image: tebanep/odoo
     run:
       link:
-        - ${CRANE_NAMESPACE}_db:db
+        - ${CRANE}_db:db
       publish:
         - "8069:8069"
       volumes-from:
-        - ${CRANE_NAMESPACE}_data
+        - ${CRANE}_data
       cmd: ["/init.py", "--bash"]
       detach: True
 
