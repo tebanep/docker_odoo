@@ -1,50 +1,32 @@
 #!/usr/bin/env python
-import sys
-import getopt
+import argparse
 import subprocess
 
 
-def show_help():
-    print 'Show the help Esteban - yes, you wrote this!'
-
-def init_bash():
-    cmd = ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/bash_supervisord.conf"]
-    subprocess.call(cmd)
-
-def init_odoo():
-    cmd = ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/odoo_supervisord.conf"]
+def run_cmd(cmd):
     subprocess.call(cmd)
 
 
-def init_postgresql():
-    cmd = ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/postgresql_supervisord.conf"]
-    subprocess.call(cmd)
+def main():
+    mode_dict = {"bash": ["/usr/bin/supervisord", "-c",
+                          "/etc/supervisor/conf.d/bash_supervisord.conf"],
+                 "odoo": ["/usr/bin/supervisord", "-c",
+                          "/etc/supervisor/conf.d/odoo_supervisord.conf"],
+                 "postgresql": ["/usr/bin/supervisord", "-c",
+                                "/etc/supervisor/conf.d/postgresql_supervisord.conf"],
+                 "all": ["/usr/bin/supervisord", "-c",
+                         "/etc/supervisor/conf.d/all_supervisord.conf"]}
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mode",
+                        choices=mode_dict.keys(),
+                        help="define container mode")
 
-def init_all():
-    cmd = ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/all_supervisord.conf"]
-    subprocess.call(cmd)
-
-
-def main(argv):
-    try:
-        opts, args = getopt.getopt(argv, 'bopah', ['bash', 'odoo', 'postgresql', 'all', 'help'])
-    except getopt.GetoptError:
-        show_help()
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt in ('-h', '--help'):
-            show_help()
-            sys.exit()
-        elif opt in ('-b', '--bash'):
-            init_bash()
-        elif opt in ('-o', '--odoo'):
-            init_odoo()
-        elif opt in ('-p', '--postgresql'):
-            init_postgresql()
-        elif opt in ('-a', '--all') or not opt:
-            init_all()
+    args = parser.parse_args()
+    mode = args.mode
+    cmd = mode_dict.get(mode, "bash")
+    run_cmd(cmd)
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
