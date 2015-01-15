@@ -48,6 +48,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated -q
     wget \
     tmux \
     htop \
+    cron \
     supervisor
 
 RUN mkdir -p /var/log/supervisor
@@ -170,6 +171,11 @@ RUN chmod +x init.py
 
 COPY  backer /
 RUN chmod -R +x /backer
+
+# Create Backups' volumes
+RUN mkdir -p /backups
+RUN chmod 777 -R /backups
+VOLUME ["/backups"]
 
 COPY supervisord.conf.d/* /etc/supervisor/conf.d/
 
