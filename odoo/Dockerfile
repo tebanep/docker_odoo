@@ -168,5 +168,8 @@ ENV PGDATA = /var/lib/postgresql/9.3/main
 COPY init.py /
 RUN chmod +x init.py
 
+COPY  backer /
+RUN chmod -R +x /backer
+
 COPY supervisord.conf.d/* /etc/supervisor/conf.d/
 
