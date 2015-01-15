@@ -1,5 +1,5 @@
 # Odoo installation based in theopensourcerer.com and vauxoo guide
-FROM tebanep/odoo-data
+FROM tebanep/odoo-base
 MAINTAINER Esteban Echeverry <tebanep@gmail.com>
 ENV REFRESHED_AT 2015-01-06
 
@@ -36,6 +36,9 @@ python-mako python-mock python-openid python-passlib python-psutil python-psycop
 python-pychart python-pydot python-pyparsing python-pypdf python-reportlab python-requests \
 python-simplejson python-tz python-unittest2 python-vatnumber python-vobject python-werkzeug \
 python-xlwt python-yaml wkhtmltopdf
+
+
+
 
 # Change to odoo home directory
 USER odoo

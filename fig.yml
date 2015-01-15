@@ -7,7 +7,7 @@ odoo:
   ports:
     - "5069:8069"
 data:
-  image: tebanep/odoo-data
+  image: tebanep/odoo-base
   volumes_from:
     - db
     - odoo

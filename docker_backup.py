@@ -18,7 +18,7 @@ volumes = [volume for volume in volumes_dict]
 print(volumes)
 
 for i, volume in enumerate(volumes):
-    container = cli.create_container(image='tebanep/odoo-data', volumes=['/backup'],
+    container = cli.create_container(image='tebanep/odoo-base', volumes=['/backup'],
                                      command='tar cvf /backup/backup.tar ' + volume,
                                      detach=True)
 
