@@ -13,11 +13,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--type",
                         choices=type_dict.keys(),
-                        help="define container mode")
+                        help="define backup type")
 
     args = parser.parse_args()
     type = args.mode
-    cmd = type_dict.get(type, "bash")
+    cmd = type_dict.get(type, "database")
 
 
 if __name__ == '__main__':
