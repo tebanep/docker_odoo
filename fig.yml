@@ -1,16 +1,29 @@
-db:
-  image: tebanep/odoo-postgresql
-odoo:
-  image: tebanep/odoo-odoo
-  links:
-    - db
-  ports:
-    - "5069:8069"
 data:
-  image: tebanep/odoo-base
-  volumes_from:
-    - db
-    - odoo
+  image: tebanep/odoo
 
+db:
+  image: tebanep/odoo
+  ports:
+    - "6032:5432"
+  volumes_from:
+    - data
+  command: ["/init.py", "--postgresql"]
+
+odoo:
+  image: tebanep/odoo
+  links:
+    - db:db
+  ports:
+    - "9069:8069"
+  volumes_from:
+    - data
+  command: ["/init.py", "--bash"]
+
+#  odoo_monolithic:
+#    image: tebanep/odoo
+#    ports:
+#      - "5032:5432"
+#      - "8069:8069"
+#    command: ["/init.py", "--all"]
 
 

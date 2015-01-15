@@ -1,34 +1,40 @@
 containers:
 
-  data:
+  ${CRANE_NAMESPACE}_data:
     dockerfile: odoo/Dockerfile
     image: tebanep/odoo
     run:
-      detach: True
-
-  db:
+    detach: Tr
+  ${CRANE_NAMESPACE}_db:
     dockerfile: odoo/Dockerfile
     image: tebanep/odoo
     run:
       publish:
         - "5032:5432"
       volumes-from:
-        - data
+        - ${CRANE_NAMESPACE}_data
       cmd: ["/init.py", "--postgresql"]
       detach: True
 
-  odoo:
+  ${CRANE_NAMESPACE}_odoo:
     dockerfile: odoo/Dockerfile
     image: tebanep/odoo
     run:
       link:
-        - db:db
+        - ${CRANE_NAMESPACE}_db:db
       publish:
         - "8069:8069"
       volumes-from:
-        - data
+        - ${CRANE_NAMESPACE}_data
       cmd: ["/init.py", "--bash"]
       detach: True
+
+#groups:
+#  solopor: ["data", "odoo", "db"]
+#  servagro: ["data", "odoo", "db"]
+#  servagro_data: ["data"]
+#  servagro_odoo: ["odoo"]
+#  servagro_postgresql: ["db"]
 
 
 #  odoo_monolithic:
