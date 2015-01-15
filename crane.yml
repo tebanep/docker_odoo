@@ -1,36 +1,45 @@
 containers:
-#  data:
-#    dockerfile: odoo-data/Dockerfile
-#    image: tebanep/odoo-postgresql
-#    run:
-#      detach: True
-#  db:
-#    dockerfile: odoo/Dockerfile
-#    image: tebanep/odoo
-#    run:
-#      publish:
-#        - "5032:5432"
-#      cmd: ["--postgresql"]
-#      detach: True
-#  odoo:
-#    dockerfile: odoo/Dockerfile
-#    image: tebanep/odoo
-#    run:
-#      link:
-#        - db:db
-#      publish:
-#        - "8069:8069"
-#      cmd: ["--odoo"]
-      #detach: True
-  odoo_monolithic:
+
+  data:
+    dockerfile: odoo/Dockerfile
+    image: tebanep/odoo
+    run:
+      detach: True
+
+  db:
     dockerfile: odoo/Dockerfile
     image: tebanep/odoo
     run:
       publish:
         - "5032:5432"
+      volumes-from:
+        - data
+      cmd: ["/init.py", "--postgresql"]
+      detach: True
+
+  odoo:
+    dockerfile: odoo/Dockerfile
+    image: tebanep/odoo
+    run:
+      link:
+        - db:db
+      publish:
         - "8069:8069"
-      cmd: ["--all"]
-      #detach: True
+      volumes-from:
+        - data
+      cmd: ["/init.py", "--bash"]
+      detach: True
+
+
+#  odoo_monolithic:
+#    dockerfile: odoo/Dockerfile
+#    image: tebanep/odoo
+#    run:
+#      publish:
+#        - "5032:5432"
+#        - "8069:8069"
+#      cmd: ["/init.py", "--all"]
+#      detach: True
 
 
 

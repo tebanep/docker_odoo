@@ -162,11 +162,11 @@ USER root
 # Change to root directory
 WORKDIR /
 
+RUN pip install sh
 ENV PGDATA = /var/lib/postgresql/9.3/main
 
-COPY entrypoint.py /
-RUN chmod +x entrypoint.py
+COPY init.py /
+RUN chmod +x init.py
 
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord.conf.d/* /etc/supervisor/conf.d/
 
-ENTRYPOINT ["/entrypoint.py"]
