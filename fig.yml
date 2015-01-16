@@ -5,9 +5,11 @@ db:
   image: tebanep/odoo
   ports:
     - "6032:5432"
+  volumes:
+    - odoo/odoo/backer/:/backer
   volumes_from:
     - data
-  command: ["/init.py", "--postgresql"]
+  command: ["/init.py", "-m", "postgresql"]
 
 odoo:
   image: tebanep/odoo
@@ -17,7 +19,7 @@ odoo:
     - "9069:8069"
   volumes_from:
     - data
-  command: ["/init.py", "--bash"]
+  command: ["/init.py","-m", "bash"]
 
 #  odoo_monolithic:
 #    image: tebanep/odoo

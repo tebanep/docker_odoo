@@ -158,24 +158,27 @@ VOLUME ["/etc/odoo", "/opt/odoo/addons", "/var/log/odoo"]
 # --------------------------------------------------------------------------------
 ENV ENTRYPOINT_REFRESHED_AT 2015-01-05
 
+USER postgres
+
+COPY crontab.txt /
+RUN crontab /crontab.txt
+
 USER root
 
 # Change to root directory
 WORKDIR /
 
-RUN pip install sh
-ENV PGDATA = /var/lib/postgresql/9.3/main
-
-COPY init.py /
-RUN chmod +x init.py
-
-COPY  backer /
-RUN chmod -R +x /backer
-
 # Create Backups' volumes
 RUN mkdir -p /backups
 RUN chmod 777 -R /backups
-VOLUME ["/backups", "/etc/cron.d"]
+
+RUN mkdir -p /backer
+RUN chmod 777 -R /backer
+
+VOLUME ["/backups", "/etc/cron.d", "/backer"]
+
+COPY init.py /
+RUN chmod +x init.py
 
 COPY supervisord.conf.d/* /etc/supervisor/conf.d/
 

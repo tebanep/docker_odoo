@@ -4,7 +4,10 @@ containers:
     dockerfile: odoo/Dockerfile
     image: tebanep/odoo
     run:
-    detach: True
+      volume:
+        - odoo/backer:/backer
+        - /home/eecheverry/Backups/Docker/Odoo:/backups
+      detach: True
 
   ${CRANE}_db:
     dockerfile: odoo/Dockerfile
@@ -14,7 +17,7 @@ containers:
         - "5032:5432"
       volumes-from:
         - ${CRANE}_data
-      cmd: ["/init.py", "--postgresql"]
+      cmd: ["/init.py", "-m", "postgresql"]
       detach: True
 
   ${CRANE}_odoo:
@@ -27,7 +30,7 @@ containers:
         - "8069:8069"
       volumes-from:
         - ${CRANE}_data
-      cmd: ["/init.py", "--bash"]
+      cmd: ["/init.py", "-m", "odoo"]
       detach: True
 
 #groups:
