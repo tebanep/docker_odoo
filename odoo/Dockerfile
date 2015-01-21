@@ -7,7 +7,7 @@ MAINTAINER Esteban Echeverry <tebanep@gmail.com>
 # All volumes are mounted by containers
 # that use "volumes-from" when run.
 # --------------------------------------------------------------------------------
-ENV REFRESHED_AT 2015-01-05
+ENV REFRESHED_AT 2015-01-18
 
 # add our users and groups first to make sure their IDs get assigned consistently,
 # regardless of whatever dependencies get added
@@ -17,6 +17,9 @@ RUN adduser --system --shell /bin/bash --home=/var/lib/postgresql -c "PostgreSQL
 
 # Create odoo user
 RUN adduser --system --shell /bin/bash --home=/opt/odoo -c "Odoo administrator" --group odoo
+
+# Create www-data user
+#RUN adduser --system --shell /usr/sbin/nologin --home=/var/www -c "Nginx administrator" --group www-data
 
 # Update and upgrade
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
@@ -53,11 +56,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated -q
 
 RUN mkdir -p /var/log/supervisor
 
+
 # --------------------------------------------------------------------------------
 # PostgreSQL
 # Install the ERP's database
 # --------------------------------------------------------------------------------
-ENV POSTGRESQL_REFRESHED_AT 2015-01-05
+ENV POSTGRESQL_REFRESHED_AT 2015-01-18
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
@@ -65,7 +69,7 @@ RUN apt-get update && apt-get install -y python-software-properties software-pro
 
 USER postgres
 
-RUN    /etc/init.d/postgresql start &&\
+RUN /etc/init.d/postgresql start &&\
     psql --command "CREATE USER odoo WITH SUPERUSER PASSWORD 'odoo';" &&\
     createdb -O odoo odoo
 
@@ -78,11 +82,37 @@ EXPOSE 5432
 # Create PostgreSQL's volumes
 VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 
+
+# --------------------------------------------------------------------------------
+# Nginx
+# Install the Nginx web server
+# --------------------------------------------------------------------------------
+ENV ODOO_REFRESHED_AT 2015-01-18
+
+USER root
+
+# Install Nginx.
+RUN \
+  add-apt-repository -y ppa:nginx/stable && \
+  apt-get update && \
+  apt-get install -y nginx && \
+  rm -rf /var/lib/apt/lists/* && \
+  echo "\ndaemon off;" >> /etc/nginx/nginx.conf && \
+  chown -R www-data:www-data /var/lib/nginx
+
+# Create Nginx's volumes
+VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/certs", "/etc/nginx/conf.d", "/var/log/nginx", "/var/www/html"]
+
+# Expose Nginx's ports.
+EXPOSE 80
+EXPOSE 443
+
+
 # --------------------------------------------------------------------------------
 # Odoo
 # Install the ERP
 # --------------------------------------------------------------------------------
-ENV ODOO_REFRESHED_AT 2015-01-05
+ENV ODOO_REFRESHED_AT 2015-01-18
 
 USER root
 
@@ -156,7 +186,7 @@ VOLUME ["/etc/odoo", "/opt/odoo/addons", "/var/log/odoo"]
 # Entrypoint
 # Set container's entrypoint
 # --------------------------------------------------------------------------------
-ENV ENTRYPOINT_REFRESHED_AT 2015-01-05
+ENV ENTRYPOINT_REFRESHED_AT 2015-01-18
 
 USER postgres
 
@@ -167,6 +197,10 @@ USER root
 
 # Change to root directory
 WORKDIR /
+
+
+# Copy external files
+COPY odoo_nginx /etc/nginx/sites-enabled
 
 # Create Backups' volumes
 RUN mkdir -p /backups

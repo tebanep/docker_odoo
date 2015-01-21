@@ -1,12 +1,13 @@
 data:
   image: tebanep/odoo
-
-db:
-  image: tebanep/odoo
-  ports:
-    - "6032:5432"
   volumes:
     - odoo/odoo/backer/:/backer
+    - /home/eecheverry/Backups/Docker/Odoo:/backups
+    - /home/eecheverry/Workspace/Pycharm/odoo_training_modules:/opt/odoo/addons
+db:
+  image: tebanep/odoo
+#  ports:
+#    - "6432:5432"
   volumes_from:
     - data
   command: ["/init.py", "-m", "postgresql"]
@@ -15,11 +16,21 @@ odoo:
   image: tebanep/odoo
   links:
     - db:db
-  ports:
-    - "9069:8069"
+#  ports:
+#    - "9069:8069"
   volumes_from:
     - data
   command: ["/init.py","-m", "bash"]
+
+nginx:
+  image: tebanep/odoo
+  links:
+    - odoo:odoo
+  ports:
+    - "8080:80"
+  volumes_from:
+    - data
+  command: ["/init.py","-m", "nginx"]
 
 #  odoo_monolithic:
 #    image: tebanep/odoo

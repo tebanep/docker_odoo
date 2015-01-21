@@ -7,6 +7,7 @@ containers:
       volume:
         - odoo/backer:/backer
         - /home/eecheverry/Backups/Docker/Odoo:/backups
+        - /home/eecheverry/Workspace/Pycharm/odoo_training_modules:/opt/odoo/addons
       detach: True
 
   ${CRANE}_db:
@@ -14,7 +15,7 @@ containers:
     image: tebanep/odoo
     run:
       publish:
-        - "5032:5432"
+        - "4432:5432"
       volumes-from:
         - ${CRANE}_data
       cmd: ["/init.py", "-m", "postgresql"]
@@ -27,7 +28,7 @@ containers:
       link:
         - ${CRANE}_db:db
       publish:
-        - "8069:8069"
+        - "7069:8069"
       volumes-from:
         - ${CRANE}_data
       cmd: ["/init.py", "-m", "odoo"]

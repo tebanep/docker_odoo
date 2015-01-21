@@ -1,0 +1,107 @@
+# Set cache dir
+proxy_cache_path /var/cache/nginx/odoo levels=1:2
+                 keys_zone=one:5m max_size=1000m;
+
+upstream odoo_server {
+    server odoo:8069 weight=1 fail_timeout=300s;
+}
+
+upstream odoo_server_longpolling {
+    server odoo:8072 weight=1 fail_timeout=300s;
+}
+
+server {
+    listen 80;
+    #server_name servagro.com.co www.servagro.com.co portal.servagro.com.co;
+
+    # Strict Transport Security
+    add_header Strict-Transport-Security max-age=2592000;
+
+    return 301 https://www.servagro.com.co$request_uri;
+}
+
+server {
+    # server port and name
+    listen 443;
+
+    proxy_cache one;
+    proxy_cache_methods GET HEAD;
+
+    server_name www.servagro.com.co;
+
+    # Specifies the maximum accepted body size of a client request,
+    # as indicated by the request header Content-Length.
+    client_max_body_size 200m;
+
+    # ssl log files
+    access_log /var/log/nginx/odoo_servagro-access.log;
+    error_log /var/log/nginx/odoo_servagro-error.log;
+
+    # ssl certificate files
+    ssl on;
+    ssl_certificate /etc/ssl/star_servagro_com_co/STAR_servagro_com_co-bundle.crt;
+    ssl_certificate_key /etc/ssl/star_servagro_com_co/server.key;
+
+    # add ssl specific settings
+    keepalive_timeout 60;
+
+    # limit ciphers
+    ssl_session_cache shared:SSL:20m;
+    ssl_session_timeout 10m;
+    ssl_protocols TLSv1 TLSv1.1 Tlsv1.2;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5;
+
+    # increase proxy buffer to handle some OpenERP web requests
+    proxy_buffers 16 64k;
+    proxy_buffer_size 128k;
+
+    # increase proxy timeouts to prevent 504 Gateway Time-Out
+    proxy_connect_timeout       6000;
+    proxy_send_timeout          6000;
+    proxy_read_timeout          6000;
+    send_timeout                6000;
+
+
+    # cache all the following file extensions
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
+        proxy_cache_valid 200 60m;
+        proxy_buffering on;
+        proxy_pass http://odoo_servagro_server;
+        #proxy_set_header X-Forwarded-Proto https;
+        #proxy_set_header X-Forwarded-Proto $scheme;
+
+        expires 7d;
+        add_header Vary Accept-Encoding;
+        access_log off;
+    }
+
+
+    location / {
+        proxy_pass http://odoo_servagro_server/;
+        # force timeouts if the backend dies
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503;
+
+        # set headers
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
+
+        # Let the OpenERP web service know that we're using HTTPS, otherwise
+        # it will generate URL using http:// and not https://
+        proxy_set_header X-Forwarded-Proto https;
+        #proxy_set_header X-Forwarded-Proto $scheme;
+
+        # by default, do not forward anything
+        proxy_redirect off;
+    }
+
+
+    # longpolling request are taken care by the odoo longpolling server to enable chat
+    location /longpolling {
+        proxy_pass http://odoo_servagro_server_longpolling;
+    }
+
+}
+
+

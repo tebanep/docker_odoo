@@ -10,6 +10,7 @@ def run_cmd(cmd):
 def main():
     mode_dict = {"bash": ["/usr/bin/supervisord", "-c",
                           "/etc/supervisor/conf.d/bash_supervisord.conf"],
+                 "nginx": ["/usr/sbin/nginx"],
                  "odoo": ["/usr/bin/supervisord", "-c",
                           "/etc/supervisor/conf.d/odoo_supervisord.conf"],
                  "postgresql": ["/usr/bin/supervisord", "-c",
