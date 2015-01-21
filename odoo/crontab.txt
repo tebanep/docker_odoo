@@ -1,0 +1,2 @@
+* * * * *  echo "hola mundo" >> /backups/hola.txt
+* * * * *  python /backer -m database -d odoo /backups

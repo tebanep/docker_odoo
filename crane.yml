@@ -1,0 +1,59 @@
+containers:
+
+  ${CRANE}_data:
+    dockerfile: odoo/Dockerfile
+    image: tebanep/odoo
+    run:
+      volume:
+        - odoo/backer:/backer
+        - /home/eecheverry/Backups/Docker/Odoo:/backups
+        - /home/eecheverry/Workspace/Pycharm/odoo_training_modules:/opt/odoo/addons
+      detach: True
+
+  ${CRANE}_db:
+    dockerfile: odoo/Dockerfile
+    image: tebanep/odoo
+    run:
+      publish:
+        - "4432:5432"
+      volumes-from:
+        - ${CRANE}_data
+      cmd: ["/init.py", "-m", "postgresql"]
+      detach: True
+
+  ${CRANE}_odoo:
+    dockerfile: odoo/Dockerfile
+    image: tebanep/odoo
+    run:
+      link:
+        - ${CRANE}_db:db
+      publish:
+        - "7069:8069"
+      volumes-from:
+        - ${CRANE}_data
+      cmd: ["/init.py", "-m", "odoo"]
+      detach: True
+
+#groups:
+#  solopor: ["data", "odoo", "db"]
+#  servagro: ["data", "odoo", "db"]
+#  servagro_data: ["data"]
+#  servagro_odoo: ["odoo"]
+#  servagro_postgresql: ["db"]
+
+
+#  odoo_monolithic:
+#    dockerfile: odoo/Dockerfile
+#    image: tebanep/odoo
+#    run:
+#      publish:
+#        - "5032:5432"
+#        - "8069:8069"
+#      cmd: ["/init.py", "--all"]
+#      detach: True
+
+
+
+
+
+
